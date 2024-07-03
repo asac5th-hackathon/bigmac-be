@@ -34,4 +34,3 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
                                                                    @Param("categoryId") Long categoryId);
 }
 
-\
