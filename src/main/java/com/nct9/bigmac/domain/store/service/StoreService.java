@@ -3,8 +3,7 @@ package com.nct9.bigmac.domain.store.service;
 import com.nct9.bigmac.domain.product.dto.ProductDto;
 import com.nct9.bigmac.domain.product.entity.Product;
 import com.nct9.bigmac.domain.product.repository.ProductRepository;
-import com.nct9.bigmac.domain.store.dto.StoreInfoDto;
-import com.nct9.bigmac.domain.store.dto.StoreProductsDto;
+import com.nct9.bigmac.domain.store.dto.*;
 import com.nct9.bigmac.domain.store.entity.Store;
 import com.nct9.bigmac.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +65,24 @@ public class StoreService {
                 store.getName(),
                 productDto
         );
+    }
+
+    public List<StoreListResponseDto> getStoreListByFilter(StoreListRequestDto request) {
+        List<StoreListResponseInterface> storeResponses = storeRepository.getStoreListByDistance(request.getLatitude(),
+                request.getLongitude(),
+                request.getDistance(),
+                request.getCategoryId());
+
+        List<StoreListResponseDto> dtos = storeResponses.stream()
+                .map(response -> new StoreListResponseDto(
+                        response.getId(),
+                        response.getName(),
+                        response.getLatitude(),
+                        response.getLongitude(),
+                        response.getPrice()
+                ))
+                .collect(Collectors.toList());
+
+        return dtos;
     }
 }
