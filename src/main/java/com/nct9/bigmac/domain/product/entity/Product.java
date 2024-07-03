@@ -26,8 +26,7 @@ public class Product extends BaseEntity {
 
     private String name;
 
+    @Setter
     private float price;
-
-
 
 }

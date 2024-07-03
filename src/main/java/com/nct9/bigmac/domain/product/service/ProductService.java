@@ -35,4 +35,12 @@ public class ProductService {
        return productRepository.findByName(productName).isPresent();
 
     }
+
+    public void updatePrice(Long id, Float newPrice) {
+        Product product = productRepository.findById(id).orElseThrow();
+        product.setPrice(newPrice);
+        productRepository.save(product);
+
+
+    }
 }
