@@ -32,7 +32,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.google.cloud:google-cloud-vision:3.3.0'
-
 }
 
 tasks.named('test') {
