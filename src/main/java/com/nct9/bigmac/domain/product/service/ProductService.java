@@ -30,4 +30,9 @@ public class ProductService {
                 .build();
         productRepository.save(product);
     }
+
+    public Boolean equalsProductName(String productName) {
+       return productRepository.findByName(productName).isPresent();
+
+    }
 }
