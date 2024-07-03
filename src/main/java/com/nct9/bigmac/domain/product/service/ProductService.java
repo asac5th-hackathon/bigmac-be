@@ -10,6 +10,9 @@ import com.nct9.bigmac.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -40,7 +43,14 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow();
         product.setPrice(newPrice);
         productRepository.save(product);
+    }
 
 
+    public boolean compareStoreNameAndDate(String ocrStoreName, String ocrDate) {
+
+        String currentDate = String.valueOf(LocalDate.now());
+        boolean storeExists = storeRepository.findByName(ocrStoreName).isPresent();
+
+        return storeExists && currentDate.equals(ocrDate);
     }
 }

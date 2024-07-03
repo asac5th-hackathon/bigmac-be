@@ -18,7 +18,7 @@ public class OcrController {
     @PostMapping("/receipt")
     public ResponseEntity<String> verifyReceipt(@RequestParam("file") MultipartFile file) {
         try {
-            String result = ocrService.detectText(file);
+            String result = String.valueOf(ocrService.detectText(file));
             return ResponseEntity.ok(result);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("파일 처리 실패: " + e.getMessage());
