@@ -23,11 +23,17 @@ public class ProductController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<Boolean> validateProductName(@RequestParam("productName") String productName) {
+    public ResponseEntity<Boolean> validateName(@RequestParam("productName") String productName) {
         Boolean validateResult = productService.equalsProductName(productName);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(validateResult);
-
     }
+
+    @PatchMapping("/update/{id}")
+        public ResponseEntity<Void> updatePrice(@PathVariable("id") Long id, @RequestParam("newPrice") Float newPrice) {
+          productService.updatePrice(id, newPrice);
+          return ResponseEntity
+                  .status(HttpStatus.ACCEPTED).build();
+        }
 }
