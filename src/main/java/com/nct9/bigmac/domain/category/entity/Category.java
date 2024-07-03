@@ -18,4 +18,7 @@ public class Category extends BaseEntity {
 
     private String name;
 
+    @Lob
+    private String svgData;
+
 }
