@@ -1,3 +1,4 @@
+
 package com.nct9.bigmac.domain.store.repository;
 
 import com.nct9.bigmac.domain.store.dto.StoreListResponseInterface;
@@ -33,3 +34,4 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
                                                                    @Param("categoryId") Long categoryId);
 }
 
+\
