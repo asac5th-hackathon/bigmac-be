@@ -15,18 +15,23 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "    S.name AS name,\n" +
             "    S.latitude AS latitude,\n" +
             "    S.longitude AS longitude,\n" +
-            "    MIN(P.price) AS price,\n" +
-            "    ST_Distance_Sphere(Point(:longitude, :latitude), Point(S.longitude, S.latitude)) AS distance\n" +
+            "    CASE\n" +
+            "        WHEN :categoryId IS NOT NULL AND EXISTS (\n" +
+            "            SELECT 1\n" +
+            "            FROM product AS P\n" +
+            "            WHERE P.store_id = S.id AND P.category_id = :categoryId\n" +
+            "        )\n" +
+            "        THEN (\n" +
+            "            SELECT MIN(P.price)\n" +
+            "            FROM product AS P\n" +
+            "            WHERE P.store_id = S.id AND P.category_id = :categoryId\n" +
+            "        )\n" +
+            "        ELSE NULL\n" +
+            "    END AS price\n" +
             "FROM\n" +
             "    store AS S\n" +
-            "LEFT JOIN product AS P ON S.id = P.store_id\n" +
             "WHERE\n" +
-            "    (:categoryId IS NULL OR S.id IN (SELECT store_id FROM product WHERE category_id = :categoryId))\n" +
-            "    AND ST_Distance_Sphere(Point(:longitude, :latitude), Point(S.longitude, S.latitude)) <= :distance\n" +
-            "GROUP BY\n" +
-            "    S.id, S.name, S.latitude, S.longitude\n" +
-            "ORDER BY\n" +
-            "    distance",
+            "    ST_Distance_Sphere(Point(:longitude, :latitude), Point(S.longitude, S.latitude)) <= :distance",
             nativeQuery = true)
     public List<StoreListResponseInterface> getStoreListByDistance(@Param("latitude") double latitude,
                                                                    @Param("longitude") double longitude,
@@ -34,4 +39,3 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
                                                                    @Param("categoryId") Long categoryId);
 }
 
-\
