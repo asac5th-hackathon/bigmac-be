@@ -19,15 +19,6 @@ public class ProductController {
     private final ProductService productService;
     private final OcrService ocrService;
 
-//    @PostMapping("/create")
-//    public ResponseEntity<Void> registerPrice(@RequestBody ProductRequestDto productRequestDto) {
-//
-//        productService.register(productRequestDto);
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED).build();
-//
-//    }
-
     @PostMapping("/create")
     public ResponseEntity<ReceiptData> registerPrice(
             @RequestPart("file") MultipartFile file,
@@ -52,17 +43,52 @@ public class ProductController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<Boolean> validateName(@RequestParam("productName") String productName) {
-        Boolean validateResult = productService.equalsProductName(productName);
-        return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(validateResult);
+    public ResponseEntity<Boolean> validateName(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("productName") String productName) {
+
+        try {
+            // OCR 처리
+            ReceiptData receiptData = ocrService.detectText(file);
+
+            // 영수증 검증 로직 추가
+            boolean isValid = productService.compareStoreNameAndDate(receiptData.getStoreName(), receiptData.getDate());
+            if (!isValid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            Boolean validateResult = productService.equalsProductName(productName);
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .body(validateResult);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PatchMapping("/update/{id}")
-        public ResponseEntity<Void> updatePrice(@PathVariable("id") Long id, @RequestParam("newPrice") Float newPrice) {
-          productService.updatePrice(id, newPrice);
-          return ResponseEntity
-                  .status(HttpStatus.ACCEPTED).build();
+    public ResponseEntity<Void> updatePrice(
+            @PathVariable("id") Long id,
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("newPrice") Float newPrice) {
+
+        try {
+            // OCR 처리
+            ReceiptData receiptData = ocrService.detectText(file);
+
+            // 영수증 검증 로직 추가
+            boolean isValid = productService.compareStoreNameAndDate(receiptData.getStoreName(), receiptData.getDate());
+            if (!isValid) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            productService.updatePrice(id, newPrice);
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED).build();
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
 }
